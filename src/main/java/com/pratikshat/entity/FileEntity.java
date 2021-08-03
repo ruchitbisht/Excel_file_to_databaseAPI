@@ -4,12 +4,19 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+
 import javax.persistence.Id;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class FileEntity {
 
 	@Id
+	@GeneratedValue
 	private int srNo;
 	private String customerName;
 	private String customerCode;
@@ -27,16 +34,24 @@ public class FileEntity {
 	private String installationStatus;
 	private String commissioningStatus;
 	private String commissionedBy;
-	private String commissioningDate;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date commissioningDate;
 	
 	private String pM1Status;
-	private String pM1DoneOn;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date pM1DoneOn;
 	private String pM1Done;
 	private String pM1Remarks;
 	private String sWUpdate;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date pMDueDate;
 	
 	private String pM2Status;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private String pM2DoneOn;
 	private String pM2Done;
 	private String pM2Remarks;
@@ -52,14 +67,16 @@ public class FileEntity {
 	private String pM4Remarks;
 	
 	private String pM5Status;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private String pM5DoneOn;
 	private String pM5Done;
 	private String pM5Remarks;
 	
 	private String pM6Status;
-	private String pM6DoneOn;
 	private String pM6Done;
 	private String pM6Remarks;
+	private String pM6DoneOn;
 	public int getSrNo() {
 		return srNo;
 	}
@@ -156,10 +173,10 @@ public class FileEntity {
 	public void setCommissionedBy(String commissionedBy) {
 		this.commissionedBy = commissionedBy;
 	}
-	public String getCommissioningDate() {
+	public Date getCommissioningDate() {
 		return commissioningDate;
 	}
-	public void setCommissioningDate(String commissioningDate) {
+	public void setCommissioningDate(Date commissioningDate) {
 		this.commissioningDate = commissioningDate;
 	}
 	public String getpM1Status() {
@@ -168,10 +185,10 @@ public class FileEntity {
 	public void setpM1Status(String pM1Status) {
 		this.pM1Status = pM1Status;
 	}
-	public String getpM1DoneOn() {
+	public Date getpM1DoneOn() {
 		return pM1DoneOn;
 	}
-	public void setpM1DoneOn(String pM1DoneOn) {
+	public void setpM1DoneOn(Date pM1DoneOn) {
 		this.pM1DoneOn = pM1DoneOn;
 	}
 	public String getpM1Done() {
