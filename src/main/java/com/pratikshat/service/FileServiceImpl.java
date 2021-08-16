@@ -2,32 +2,44 @@ package com.pratikshat.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
+
+import javax.print.attribute.standard.SheetCollate;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.pratikshat.entity.FileEntity;
+import com.pratikshat.entity.LogInEntity;
 import com.pratikshat.repository.FileRepository;
+import com.pratikshat.repository.LoginRepository;
+import com.pratikshat.request.FileRequest;
+import com.pratikshat.request.LoginRequest;
 
 @Service
 public class FileServiceImpl implements FileService {
 
 	@Autowired
 	FileRepository fileRepository;
+	
+	@Autowired
+	LoginRepository loginRepository;
+	
+	@Autowired
+	JdbcTemplate jdbc;
 	
 	@Override
 	public FileEntity getFileById(int srNo) {
@@ -37,10 +49,9 @@ public class FileServiceImpl implements FileService {
 	}
 	
 	@Override
-	public List<FileEntity> getFileByName(String name) {
-		return fileRepository.findByCustomerNameContaining(name);
+	public Page<FileEntity> getFileByKeyword(String keyword,Pageable page) {
+		return fileRepository.getBySearch(keyword, page);
 	}
-
 
 	@Override
 	public FileEntity saveRow(FileEntity fileEntity) {
@@ -63,11 +74,16 @@ public class FileServiceImpl implements FileService {
 		fileEntity.setTypeOfCharger(file.getTypeOfCharger());
 		fileEntity.setModel(file.getModel());
 		fileEntity.setSerialNumber(file.getSerialNumber());
+		fileEntity.setDateOfInvoice(file.getDateOfInvoice());
 		fileEntity.setFinalInstallationStatus(file.getFinalInstallationStatus());
 		fileEntity.setInstallationStatus(file.getInstallationStatus());
 		fileEntity.setCommissioningStatus(file.getCommissioningStatus());
 		fileEntity.setCommissionedBy(file.getCommissionedBy());
 		fileEntity.setCommissioningDate(file.getCommissioningDate());
+		fileEntity.setWarrantyAmcStatus(file.getWarrantyAmcStatus());
+		fileEntity.setWarrantyAmcInMonth(file.getWarrantyAmcInMonth());
+		fileEntity.setWarrantyAmcValidityDate(file.getWarrantyAmcValidityDate());
+		fileEntity.setpMFrequency(file.getpMFrequency());
 		fileEntity.setpM1Status(file.getpM1Status());
 		fileEntity.setpM1DoneOn(file.getpM1DoneOn());
 		fileEntity.setpM1Done(file.getpM1Done());
@@ -105,7 +121,7 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public Page<FileEntity> getFile(Pageable page) {
-
+	
 		return fileRepository.findAll(page);
 
 	}
@@ -119,20 +135,23 @@ public class FileServiceImpl implements FileService {
 	@Override
 	public void saveFile(MultipartFile file) throws IOException {
 
+	try {	
 		FileEntity fileEntity = new FileEntity();
 
 		InputStream inputStream = file.getInputStream();
 
 		XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+//		workbook.setCompressTempFiles(true);
 
-		XSSFSheet sheet = workbook.getSheetAt(1);
+		XSSFSheet sheet =  workbook.getSheet("Back UP");
+//		sheet.setRandomAccessWindowSize(100);
 
 		int rows = sheet.getLastRowNum();
-		int columns = sheet.getRow(0).getLastCellNum();
+		int columns=sheet.getRow(0).getLastCellNum();
 
 		for (int i = 1; i <= rows; i++) {
 
-			XSSFRow row = (XSSFRow) sheet.getRow(i);
+			XSSFRow row = sheet.getRow(i);
 
 			System.out.println(sheet.getLastRowNum());
 			Iterator<Cell> cellIterator = row.cellIterator();
@@ -144,7 +163,7 @@ public class FileServiceImpl implements FileService {
 			int cellId = 0;
 			while (cellIterator.hasNext()) {
 
-				XSSFCell cell = (XSSFCell) cellIterator.next();
+				XSSFCell cell =  (XSSFCell) cellIterator.next();
 
 				switch (cellId) {
 				case 0:
@@ -183,22 +202,32 @@ public class FileServiceImpl implements FileService {
 					fileEntity.setModel(cell.getStringCellValue());
 					break;
 				case 11:
+					System.out.println("Serial no.");
 					String val10 = dataFormatter.formatCellValue(cell);
 					fileEntity.setSerialNumber(val10);
 					break;
-				case 12:
-					fileEntity.setFinalInstallationStatus(cell.getStringCellValue());
+				case 12: 
+					System.out.println("dateofInvoce");
+					String val11 = dataFormatter.formatCellValue(cell);
+					fileEntity.setDateOfInvoice(val11);
 					break;
 				case 13:
-					fileEntity.setInstallationStatus(cell.getStringCellValue());
+					System.out.println("Finalins");
+					fileEntity.setFinalInstallationStatus(cell.getStringCellValue());
 					break;
 				case 14:
-					fileEntity.setCommissioningStatus(cell.getStringCellValue());
+					System.out.println("Install");
+					fileEntity.setInstallationStatus(cell.getStringCellValue());
 					break;
 				case 15:
-					fileEntity.setCommissionedBy(cell.getStringCellValue());
+					fileEntity.setCommissioningStatus(cell.getStringCellValue());
 					break;
 				case 16:
+					System.out.println("before");
+					fileEntity.setCommissionedBy(cell.getStringCellValue());
+					System.out.println("after");
+					break;
+				case 17:
 					
 					if(cell.toString().contains("N.C")|| cell.toString().equalsIgnoreCase("")) {
 						fileEntity.setCommissioningDate(null);
@@ -206,91 +235,103 @@ public class FileServiceImpl implements FileService {
 					}
 					fileEntity.setCommissioningDate(cell.getDateCellValue());
 					break;
-				case 17:
-					fileEntity.setpM1Status(cell.getStringCellValue());
+				case 18: 
+					fileEntity.setWarrantyAmcStatus(cell.getStringCellValue());
 					break;
-				case 18:
+				case 19: 
+					fileEntity.setWarrantyAmcInMonth(cell.getStringCellValue());
+					break;
+				case 20: 
+					fileEntity.setWarrantyAmcValidityDate(cell.getStringCellValue());
+					break;
+				case 21:
+					fileEntity.setpMFrequency(cell.getStringCellValue());
+					break;
+				case 22:
+					fileEntity.setpM1Status(cell.getStringCellValue());
+					break;	
+				case 23:
 					if(cell.toString().contains("N.A") || cell.toString().equalsIgnoreCase("") || cell.toString().contains("Pending")) {
 						fileEntity.setpM1DoneOn(null);
 						break;
 					}
 					fileEntity.setpM1DoneOn(cell.getDateCellValue());
 					break;
-				case 19:
+				case 24:
 					fileEntity.setpM1Done(cell.getStringCellValue());
 					break;
-				case 20:
+				case 25:
 					fileEntity.setpM1Remarks(cell.getStringCellValue());
 					break;
-				case 21:
+				case 26:
 					fileEntity.setsWUpdate(cell.getStringCellValue());
 					break;
-				case 22:
+				case 27:
 					fileEntity.setpMDueDate(cell.getDateCellValue());
 					break;
-				case 23:
+				case 28:
 					fileEntity.setpM2Status(cell.getStringCellValue());
 					break;
-				case 24:
+				case 29:
 					String val2 = dataFormatter.formatCellValue(cell);
 					fileEntity.setpM2DoneOn(val2);
 					break;
-				case 25:
+				case 30:
 					fileEntity.setpM2Done(cell.getStringCellValue());
 					break;
-				case 26:
+				case 31:
 					fileEntity.setpM2Remarks(cell.getStringCellValue());
 					break;
-				case 27:
+				case 32:
 					fileEntity.setpM3Status(cell.getStringCellValue());
 					break;
-				case 28:
+				case 33:
 					String val3 = dataFormatter.formatCellValue(cell);
 					fileEntity.setpM3DoneOn(val3);
 					break;
-				case 29:
+				case 34:
 					fileEntity.setpM3Done(cell.getStringCellValue());
 					break;
-				case 30:
+				case 35:
 					fileEntity.setpM3Remarks(cell.getStringCellValue());
 					break;
-				case 31:
+				case 36:
 					fileEntity.setpM4Status(cell.getStringCellValue());
 					break;
-				case 32:
+				case 37:
 					String val4 = dataFormatter.formatCellValue(cell);
 					fileEntity.setpM4DoneOn(val4);
 					break;
-				case 33:
+				case 38:
 					fileEntity.setpM4Done(cell.getStringCellValue());
 					break;
-				case 34:
+				case 39:
 					fileEntity.setpM4Remarks(cell.getStringCellValue());
 					break;
-				case 35:
+				case 40:
 					fileEntity.setpM5Status(cell.getStringCellValue());
 					break;
-				case 36:
+				case 41:
 					String val5 = dataFormatter.formatCellValue(cell);
 					fileEntity.setpM5DoneOn(val5);
 					break;
-				case 37:
+				case 42:
 					fileEntity.setpM5Done(cell.getStringCellValue());
 					break;
-				case 38:
+				case 43:
 					fileEntity.setpM5Remarks(cell.getStringCellValue());
 					break;
-				case 39:
+				case 44:
 					fileEntity.setpM6Status(cell.getStringCellValue());
 					break;
-				case 40:
+				case 45:
 					String val6 = dataFormatter.formatCellValue(cell);
 					fileEntity.setpM6DoneOn(val6);
 					break;
-				case 41:
+				case 46:
 					fileEntity.setpM6Done(cell.getStringCellValue());
 					break;
-				case 42:
+				case 47:
 					fileEntity.setpM6Remarks(cell.getStringCellValue());
 					break;
 
@@ -303,9 +344,209 @@ public class FileServiceImpl implements FileService {
 			}
 
 			System.out.println(" ");
-
 		}
+		workbook.close();
+		inputStream.close();
+	}catch (Exception e) {
+		e.printStackTrace();
+	}
+		
+	}
+	
 
+
+	@Override
+	public Page<FileEntity> getFileByCustomerName(String customerName,Pageable pageable) {
+		return this.fileRepository.findByCustomerNameStartingWith(customerName,pageable);
 	}
 
+	@Override
+	public Page<FileEntity> getFileByCustomerCode(String customerCode, Pageable pageable) {
+		return this.fileRepository.findByCustomerCodeStartingWith(customerCode,pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileBySiteName(String siteName, Pageable pageable) {
+		return this.fileRepository.findBySiteNameStartingWith(siteName, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileByState(String state, Pageable pageable) {
+		
+		return this.fileRepository.findByStateStartingWith(state, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileBySiteAddress(String siteAddress, Pageable pageable) {
+		
+		return this.fileRepository.findBySiteAddressStartingWith(siteAddress, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileByCity(String city, Pageable pageable) {
+		
+		return this.fileRepository.findByCityStartingWith(city, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileByLocalContactPersonName(String localContactPersonName, Pageable pageable) {
+		
+		return this.fileRepository.findByLocalContactPersonNameStartingWith(localContactPersonName, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileByLocalPersonContact(String localPersonContact, Pageable pageable) {
+		
+		return this.fileRepository.findByLocalPersonContactStartingWith(localPersonContact, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileByTypeOfCharger(String typeOfCharger, Pageable pageable) {
+		
+		return this.fileRepository.findByTypeOfChargerStartingWith(typeOfCharger, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileByModel(String model, Pageable pageable) {
+		
+		return this.fileRepository.findByModelStartingWith(model, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileBySerialNumber(String serialNumber, Pageable pageable) {
+		
+		return this.fileRepository.findBySerialNumberStartingWith(serialNumber, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileByFinalInstallationStatus(String finalInstallationStatus, Pageable pageable) {
+		
+		return this.fileRepository.findByFinalInstallationStatusStartingWith(finalInstallationStatus, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileByInstallationStatus(String installationStatus, Pageable pageable) {
+		
+		return this.fileRepository.findByInstallationStatusStartingWith(installationStatus, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileByCommissioningStatus(String commissioningStatus, Pageable pageable) {
+		
+		return this.fileRepository.findByCommissioningStatusStartingWith(commissioningStatus, pageable);
+	}
+
+	@Override
+	public Page<FileEntity> getFileByCommissionedBy(String commissionedBy, Pageable pageable) {
+		
+		return this.fileRepository.findByCommissionedByStartingWith(commissionedBy, pageable);
+	}
+	
+	
+	//Advance Search
+	
+	public List<Map<String,Object>> advanceSearch(Map<String, Object> searchKey,Pageable pageable) {
+	List<Object> value=new ArrayList<>();
+	
+	String _query=
+			"SELECT * FROM `file_entity` file "
+			+ " WHERE 1=1";
+//	FileRequest fileRequest=new FileRequest();
+	StringBuilder builder=new StringBuilder();
+	builder.append(_query);
+	System.out.println(searchKey.get("customerName"));
+	
+	if(searchKey.get("customerName") !=null && !searchKey.get("customerName").toString().equalsIgnoreCase("")) {
+		builder.append(" and file.`customer_name` like ? ");
+		value.add("%" + searchKey.get("customerName") +"%");
+		}
+	if(searchKey.get("customerCode") !=null && !searchKey.get("customerCode").toString().equalsIgnoreCase("") ) {
+		builder.append(" and file.`customer_code` like ? ");
+		value.add(searchKey.get("customerCode") +"%" );
+	}
+	if(searchKey.get("siteName") !=null && !searchKey.get("siteName").toString().equalsIgnoreCase("") ) {
+		builder.append("AND `site_name` like ?");
+		value.add(searchKey.get("siteName"));
+	}
+	if(searchKey.get("") !=null && !searchKey.get("").toString().equalsIgnoreCase("") ) {
+		builder.append("AND `site_address` like ?");
+		value.add(searchKey.get() );
+	}
+	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
+		builder.append("AND `city` like ?");
+		value.add(searchKey.get() );
+	}
+	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
+		builder.append("AND `state` like ?");
+		value.add(searchKey.get() );
+	}
+	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
+		builder.append("AND `local_contact_person_name` like ?");
+		value.add(searchKey.get() );
+	}
+	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
+		builder.append("AND `local_person_contact` like ?");
+		value.add(searchKey.get() );
+	}
+	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
+		builder.append("AND `type_of_charger` like ?");
+		value.add(searchKey.get() );
+	}
+	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
+		builder.append("AND `model` like ?");
+		value.add(searchKey.get() );
+	}
+	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
+		builder.append("AND `serial_number` like ?");
+		value.add(searchKey.get() );
+	}
+	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
+		builder.append("AND `date_of_invoice` like ?");
+		value.add(searchKey.get() );
+	}
+	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
+		builder.append("AND `final_installation_status` like ?");
+		value.add(searchKey.get() );
+	}
+	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
+		builder.append("AND `installation_status` like ?");
+		value.add(searchKey.get() );
+	}
+//	if(searchKey.getCommissioningStatus() !=null && !searchKey.getCommissioningStatus().equalsIgnoreCase("") ) {
+//		builder.append("AND `commission_status` like ?");
+//		value.add(searchKey.getCommissioningStatus() );
+//	}
+//	if(searchKey.getCommissionedBy() !=null && !searchKey.getCommissionedBy().equalsIgnoreCase("") ) {
+//		builder.append("AND `commissioned_by` like ?");
+//		value.add(searchKey.getCommissionedBy() );
+//	}
+//	if(searchKey.getCommissioningDate() !=null && !searchKey.getCommissioningDate().toString().equalsIgnoreCase("") ) {
+//		builder.append("AND `commissioning_date` like ?");
+//		value.add(searchKey.getCommissioningDate() );
+//	}
+//	if(searchKey.getWarrantyAmcStatus() !=null && !searchKey.getWarrantyAmcStatus().equalsIgnoreCase("") ) {
+//		builder.append("AND `warranty_amc_status` like ?");
+//		value.add(searchKey.getWarrantyAmcStatus() );
+//	}
+//	if(searchKey.getWarrantyAmcInMonth() !=null && !searchKey.getWarrantyAmcInMonth().equalsIgnoreCase("") ) {
+//		builder.append("AND `warranty_amc_in_month` like ?");
+//		value.add(searchKey.getWarrantyAmcInMonth() );
+//	}
+//	if(searchKey.getWarrantyAmcValidityDate() !=null && !searchKey.getWarrantyAmcValidityDate().equalsIgnoreCase("") ) {
+//		builder.append("AND `warranty_amc_validity_date` like ?");
+//		value.add(searchKey.getWarrantyAmcValidityDate() );
+//	}
+//	if(searchKey.getpMFrequency() !=null && !searchKey.getpMFrequency().equalsIgnoreCase("") ) {
+//		builder.append("AND `pmfrequency` like ?");
+//		value.add(searchKey.getpMFrequency() );
+//	}
+//	
+	return jdbc.queryForList(builder.toString(), value.toArray());
+	
+	 
+	}
+
+	
+	
+	
 }

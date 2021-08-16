@@ -5,8 +5,10 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -16,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class FileEntity {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private int srNo;
 	private String customerName;
 	private String customerCode;
@@ -30,28 +32,39 @@ public class FileEntity {
 	private String typeOfCharger;
 	private String model;
 	private String serialNumber;
+	
+	private String dateOfInvoice;
 	private String finalInstallationStatus;
 	private String installationStatus;
 	private String commissioningStatus;
 	private String commissionedBy;
 	@JsonFormat(pattern="yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Temporal(TemporalType.DATE)
 	private Date commissioningDate;
+
+	private String warrantyAmcStatus;
+	private String warrantyAmcInMonth;
+	private String warrantyAmcValidityDate;
+	private String pMFrequency;
 	
 	private String pM1Status;
 	@JsonFormat(pattern="yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Temporal(TemporalType.DATE)
 	private Date pM1DoneOn;
 	private String pM1Done;
 	private String pM1Remarks;
 	private String sWUpdate;
 	@JsonFormat(pattern="yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Temporal(TemporalType.DATE)
 	private Date pMDueDate;
 	
 	private String pM2Status;
 	@JsonFormat(pattern="yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+//	@Temporal(TemporalType.DATE)
 	private String pM2DoneOn;
 	private String pM2Done;
 	private String pM2Remarks;
@@ -69,6 +82,7 @@ public class FileEntity {
 	private String pM5Status;
 	@JsonFormat(pattern="yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+//	@Temporal(TemporalType.DATE)
 	private String pM5DoneOn;
 	private String pM5Done;
 	private String pM5Remarks;
@@ -149,6 +163,12 @@ public class FileEntity {
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
 	}
+	public String getDateOfInvoice() {
+		return dateOfInvoice;
+	}
+	public void setDateOfInvoice(String dateOfInvoice) {
+		this.dateOfInvoice = dateOfInvoice;
+	}
 	public String getFinalInstallationStatus() {
 		return finalInstallationStatus;
 	}
@@ -178,6 +198,30 @@ public class FileEntity {
 	}
 	public void setCommissioningDate(Date commissioningDate) {
 		this.commissioningDate = commissioningDate;
+	}
+	public String getWarrantyAmcStatus() {
+		return warrantyAmcStatus;
+	}
+	public void setWarrantyAmcStatus(String warrantyAmcStatus) {
+		this.warrantyAmcStatus = warrantyAmcStatus;
+	}
+	public String getWarrantyAmcInMonth() {
+		return warrantyAmcInMonth;
+	}
+	public void setWarrantyAmcInMonth(String warrantyAmcInMonth) {
+		this.warrantyAmcInMonth = warrantyAmcInMonth;
+	}
+	public String getWarrantyAmcValidityDate() {
+		return warrantyAmcValidityDate;
+	}
+	public void setWarrantyAmcValidityDate(String warrantyAmcValidityDate) {
+		this.warrantyAmcValidityDate = warrantyAmcValidityDate;
+	}
+	public String getpMFrequency() {
+		return pMFrequency;
+	}
+	public void setpMFrequency(String pMFrequency) {
+		this.pMFrequency = pMFrequency;
 	}
 	public String getpM1Status() {
 		return pM1Status;
@@ -317,12 +361,6 @@ public class FileEntity {
 	public void setpM6Status(String pM6Status) {
 		this.pM6Status = pM6Status;
 	}
-	public String getpM6DoneOn() {
-		return pM6DoneOn;
-	}
-	public void setpM6DoneOn(String pM6DoneOn) {
-		this.pM6DoneOn = pM6DoneOn;
-	}
 	public String getpM6Done() {
 		return pM6Done;
 	}
@@ -334,6 +372,12 @@ public class FileEntity {
 	}
 	public void setpM6Remarks(String pM6Remarks) {
 		this.pM6Remarks = pM6Remarks;
+	}
+	public String getpM6DoneOn() {
+		return pM6DoneOn;
+	}
+	public void setpM6DoneOn(String pM6DoneOn) {
+		this.pM6DoneOn = pM6DoneOn;
 	}
 	
 	
