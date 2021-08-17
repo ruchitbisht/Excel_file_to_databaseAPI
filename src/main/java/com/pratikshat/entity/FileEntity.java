@@ -9,8 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotBlank;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -20,32 +22,77 @@ public class FileEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private int srNo;
+	@NonNull
+	@NotBlank
 	private String customerName;
+	@NonNull
+	@NotBlank
 	private String customerCode;
+	@NonNull
+	@NotBlank
 	private String siteName;
+	@NonNull
+	@NotBlank
 	@Column(length = 1000)
 	private String siteAddress;
+	@NonNull
+	@NotBlank
 	private String city;
+	@NonNull
+	@NotBlank
 	private String state;
+	@NonNull
+	@NotBlank
 	private String localContactPersonName;
+	@NonNull
+	@NotBlank
 	private String localPersonContact;
+	@NonNull
+	@NotBlank
 	private String typeOfCharger;
+	@NonNull
+	@NotBlank
 	private String model;
+	@NonNull
+	@NotBlank
 	private String serialNumber;
-	
+	@NonNull
+	@NotBlank
 	private String dateOfInvoice;
+	@NonNull
+	@NotBlank
 	private String finalInstallationStatus;
+	@NonNull
+	@NotBlank
 	private String installationStatus;
+	@NonNull
+	@NotBlank
 	private String commissioningStatus;
+	@NonNull
+	@NotBlank
 	private String commissionedBy;
+	
+	@NonNull
+	@NotBlank
 	@JsonFormat(pattern="yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Temporal(TemporalType.DATE)
 	private Date commissioningDate;
 
+	@NonNull
+	@NotBlank
 	private String warrantyAmcStatus;
+	
+	@NonNull
+	@NotBlank
 	private String warrantyAmcInMonth;
+	
+	@NonNull
+	@NotBlank
 	private String warrantyAmcValidityDate;
+	
+	@NonNull
+	@NotBlank
 	private String pMFrequency;
 	
 	private String pM1Status;

@@ -465,88 +465,84 @@ public class FileServiceImpl implements FileService {
 		value.add(searchKey.get("customerCode") +"%" );
 	}
 	if(searchKey.get("siteName") !=null && !searchKey.get("siteName").toString().equalsIgnoreCase("") ) {
-		builder.append("AND `site_name` like ?");
-		value.add(searchKey.get("siteName"));
+		builder.append(" AND `site_name` like ? ");
+		value.add(searchKey.get("siteName") +"%" );
 	}
-	if(searchKey.get("") !=null && !searchKey.get("").toString().equalsIgnoreCase("") ) {
-		builder.append("AND `site_address` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("siteAddress") !=null && !searchKey.get("siteAddress").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `site_address` like ?");
+		value.add(searchKey.get("siteAddress") +"%"  );
 	}
-	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
-		builder.append("AND `city` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("city") !=null && !searchKey.get("city").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `city` like ?");
+		value.add(searchKey.get("city") +"%"  );
 	}
-	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
-		builder.append("AND `state` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("state") !=null && !searchKey.get("state").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `state` like ?");
+		value.add(searchKey.get("state") +"%"  );
 	}
-	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
-		builder.append("AND `local_contact_person_name` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("localContactPersonName") !=null && !searchKey.get("localContactPersonName").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `local_contact_person_name` like ?");
+		value.add(searchKey.get("localContactPersonName") +"%"  );
 	}
-	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
-		builder.append("AND `local_person_contact` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("localPersonContact") !=null && !searchKey.get("localPersonContact").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `local_person_contact` like ?");
+		value.add(searchKey.get("localPersonContact") +"%"  );
 	}
-	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
-		builder.append("AND `type_of_charger` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("typeOfCharger") !=null && !searchKey.get("typeOfCharger").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `type_of_charger` like ?");
+		value.add(searchKey.get("typeOfCharger") +"%" );
 	}
-	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
-		builder.append("AND `model` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("model") !=null && !searchKey.get("model").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `model` like ?");
+		value.add(searchKey.get("model") +"%"  );
 	}
-	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
-		builder.append("AND `serial_number` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("serialNumber") !=null && !searchKey.get("serialNumber").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `serial_number` like ?");
+		value.add(searchKey.get("serialNumber") +"%"  );
 	}
-	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
-		builder.append("AND `date_of_invoice` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("dateOfInvoice") !=null && !searchKey.get("dateOfInvoice").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `date_of_invoice` like ?");
+		value.add(searchKey.get("dateOfInvoice") +"%"  );
 	}
-	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
-		builder.append("AND `final_installation_status` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("finalInstallationStatus") !=null && !searchKey.get("finalInstallationStatus").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `final_installation_status` like ?");
+		value.add(searchKey.get("finalInstallationStatus") +"%"  );
 	}
-	if(searchKey.get() !=null && !searchKey.get().equalsIgnoreCase("") ) {
-		builder.append("AND `installation_status` like ?");
-		value.add(searchKey.get() );
+	if(searchKey.get("installationStatus") !=null && !searchKey.get("installationStatus").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `installation_status` like ?");
+		value.add(searchKey.get("installationStatus") +"%"  );
 	}
-//	if(searchKey.getCommissioningStatus() !=null && !searchKey.getCommissioningStatus().equalsIgnoreCase("") ) {
-//		builder.append("AND `commission_status` like ?");
-//		value.add(searchKey.getCommissioningStatus() );
-//	}
-//	if(searchKey.getCommissionedBy() !=null && !searchKey.getCommissionedBy().equalsIgnoreCase("") ) {
-//		builder.append("AND `commissioned_by` like ?");
-//		value.add(searchKey.getCommissionedBy() );
-//	}
-//	if(searchKey.getCommissioningDate() !=null && !searchKey.getCommissioningDate().toString().equalsIgnoreCase("") ) {
-//		builder.append("AND `commissioning_date` like ?");
-//		value.add(searchKey.getCommissioningDate() );
-//	}
-//	if(searchKey.getWarrantyAmcStatus() !=null && !searchKey.getWarrantyAmcStatus().equalsIgnoreCase("") ) {
-//		builder.append("AND `warranty_amc_status` like ?");
-//		value.add(searchKey.getWarrantyAmcStatus() );
-//	}
-//	if(searchKey.getWarrantyAmcInMonth() !=null && !searchKey.getWarrantyAmcInMonth().equalsIgnoreCase("") ) {
-//		builder.append("AND `warranty_amc_in_month` like ?");
-//		value.add(searchKey.getWarrantyAmcInMonth() );
-//	}
-//	if(searchKey.getWarrantyAmcValidityDate() !=null && !searchKey.getWarrantyAmcValidityDate().equalsIgnoreCase("") ) {
-//		builder.append("AND `warranty_amc_validity_date` like ?");
-//		value.add(searchKey.getWarrantyAmcValidityDate() );
-//	}
-//	if(searchKey.getpMFrequency() !=null && !searchKey.getpMFrequency().equalsIgnoreCase("") ) {
-//		builder.append("AND `pmfrequency` like ?");
-//		value.add(searchKey.getpMFrequency() );
-//	}
-//	
-	return jdbc.queryForList(builder.toString(), value.toArray());
+	if(searchKey.get("commissioningStatus") !=null && !searchKey.get("commissioningStatus").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `commission_status` like ?");
+		value.add(searchKey.get("commissioningStatus") +"%"  );
+	}
+	if(searchKey.get("commissionedBy") !=null && !searchKey.get("commissionedBy").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `commissioned_by` like ?");
+		value.add(searchKey.get("commissionedBy") +"%"  );
+	}
+	if(searchKey.get("commissioningDate") !=null && !searchKey.get("commissioningDate").toString().toString().equalsIgnoreCase("") ) {
+		builder.append(" and `commissioning_date` like ?");
+		value.add(searchKey.get("commissioningDate") +"%"  );
+	}
+	if(searchKey.get("warrantyAmcStatus") !=null && !searchKey.get("warrantyAmcStatus").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `warranty_amc_status` like ?");
+		value.add(searchKey.get("warrantyAmcStatus") +"%"  );
+	}
+	if(searchKey.get("warrantyAmcInMonth") !=null && !searchKey.get("warrantyAmcInMonth").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `warranty_amc_in_month` like ?");
+		value.add(searchKey.get("warrantyAmcInMonth") +"%"  );
+	}
+	if(searchKey.get("warrantyAmcValidityDate") !=null && !searchKey.get("warrantyAmcValidityDate").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `warranty_amc_validity_date` like ?");
+		value.add(searchKey.get("warrantyAmcValidityDate") +"%"  );
+	}
+	if(searchKey.get("pMFrequency") !=null && !searchKey.get("pMFrequency").toString().equalsIgnoreCase("") ) {
+		builder.append(" and `pmfrequency` like ?");
+		value.add(searchKey.get("pMFrequency") +"%"  );
+	}
 	
-	 
+	return jdbc.queryForList(builder.toString(), value.toArray()); 
 	}
+	
 
-	
-	
-	
 }
